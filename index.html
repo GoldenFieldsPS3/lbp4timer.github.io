@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LBP4 Countdown</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+    min-height:100vh;
+    padding:40px 20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.hero{
+    text-align:center;
+    margin-bottom:50px;
+}
+
+.hero h1{
+    font-size:4rem;
+    font-weight:800;
+    background:linear-gradient(90deg,#ff9a00,#ff2d55);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero p{
+    opacity:.8;
+    margin-top:10px;
+}
+
+.joke{
+    margin-top:20px;
+    font-size:1.1rem;
+    color:#ffd166;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:24px;
+    padding:25px;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.flag{
+    font-size:2.5rem;
+}
+
+.region{
+    font-size:1.4rem;
+    font-weight:600;
+    margin-top:10px;
+}
+
+.release{
+    opacity:.7;
+    margin-bottom:20px;
+}
+
+.countdown{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+.box{
+    background:rgba(255,255,255,0.1);
+    border-radius:15px;
+    padding:12px;
+    text-align:center;
+}
+
+.box span{
+    display:block;
+    font-size:1.4rem;
+    font-weight:700;
+}
+
+.box small{
+    opacity:.7;
+}
+
+.footer{
+    text-align:center;
+    margin-top:50px;
+    opacity:.7;
+}
+
+.lbp-joke{
+    margin-top:20px;
+    text-align:center;
+    color:#ffb703;
+    font-size:1rem;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="hero">
+        <h1>LBP4 Countdown</h1>
+        <p>The totally real countdown for LittleBigPlanet 4™</p>
+
+        <div class="joke">
+            Average LBP fan waiting time: <b>12 business years</b>
+        </div>
+    </div>
+
+    <div class="grid" id="cards"></div>
+
+    <div class="lbp-joke">
+        If the timer reaches 0 and LBP4 still isn't out,
+        increase it by another 10 years.
+    </div>
+
+    <div class="footer">
+        Sackboy is probably still crafting...
+    </div>
+
+</div>
+
+<script>
+
+const releases = [
+{
+    region:"USA",
+    flag:"🇺🇸",
+    date:"2026-09-09T00:00:00"
+},
+{
+    region:"European Union",
+    flag:"🇪🇺",
+    date:"2026-09-26T00:00:00"
+},
+{
+    region:"United Kingdom",
+    flag:"🇬🇧",
+    date:"2026-09-26T00:00:00"
+},
+{
+    region:"Japan",
+    flag:"🇯🇵",
+    date:"2026-10-02T00:00:00"
+},
+{
+    region:"Australia",
+    flag:"🇦🇺",
+    date:"2026-11-26T00:00:00"
+}
+];
+
+const container = document.getElementById("cards");
+
+releases.forEach((item,index)=>{
+    container.innerHTML += `
+    <div class="card">
+        <div class="flag">${item.flag}</div>
+        <div class="region">${item.region}</div>
+        <div class="release">${new Date(item.date).toDateString()}</div>
+
+        <div class="countdown" id="countdown-${index}">
+            <div class="box"><span>0</span><small>Days</small></div>
+            <div class="box"><span>0</span><small>Hours</small></div>
+            <div class="box"><span>0</span><small>Min</small></div>
+            <div class="box"><span>0</span><small>Sec</small></div>
+        </div>
+    </div>
+    `;
+});
+
+function updateCountdowns(){
+
+    releases.forEach((item,index)=>{
+
+        const target = new Date(item.date).getTime();
+        const now = Date.now();
+
+        let diff = target - now;
+
+        if(diff < 0){
+            document.getElementById(`countdown-${index}`).innerHTML =
+            `<div style="grid-column:span 4;text-align:center;font-weight:700;font-size:1.2rem;color:#4ade80;">
+                🎉 LBP4 IS OUT! (Hopefully...)
+            </div>`;
+            return;
+        }
+
+        const days = Math.floor(diff/(1000*60*60*24));
+        const hours = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+        const mins = Math.floor((diff%(1000*60*60))/(1000*60));
+        const secs = Math.floor((diff%(1000*60))/1000);
+
+        document.getElementById(`countdown-${index}`).innerHTML = `
+            <div class="box"><span>${days}</span><small>Days</small></div>
+            <div class="box"><span>${hours}</span><small>Hours</small></div>
+            <div class="box"><span>${mins}</span><small>Min</small></div>
+            <div class="box"><span>${secs}</span><small>Sec</small></div>
+        `;
+    });
+
+}
+
+updateCountdowns();
+setInterval(updateCountdowns,1000);
+
+</script>
+
+</body>
+</html>
